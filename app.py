@@ -4,6 +4,43 @@ import base64
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
+from supabase import create_client
+
+# ── Supabase 클라이언트 ──
+@st.cache_resource
+def get_supabase():
+    try:
+        url = st.secrets["SUPABASE_URL"]
+        key = st.secrets["SUPABASE_KEY"]
+        return create_client(url, key)
+    except Exception:
+        return None
+
+def log_access(player_name: str):
+    """온보딩 완료 시 접속 기록 저장"""
+    db = get_supabase()
+    if db:
+        try:
+            db.table("access_logs").insert({"player_name": player_name}).execute()
+        except Exception:
+            pass
+
+def log_form(player_name: str, gender, device_consent, height, weight, underwear_size, has_family):
+    """지원서 제출 시 폼 데이터 저장"""
+    db = get_supabase()
+    if db:
+        try:
+            db.table("form_submissions").insert({
+                "player_name":     player_name,
+                "gender":          gender,
+                "device_consent":  device_consent,
+                "height":          height,
+                "weight":          weight,
+                "underwear_size":  underwear_size,
+                "has_family":      has_family,
+            }).execute()
+        except Exception:
+            pass
 
 # ─────────────────────────────────────────────
 # 페이지 설정
@@ -204,6 +241,7 @@ div[data-testid="stButton"] > button:hover {
             if player_name_input.strip():
                 st.session_state.player_name = player_name_input.strip()
                 st.session_state.page = "intranet"
+                log_access(player_name_input.strip())
                 st.rerun()
             else:
                 st.error("수사관 성함을 입력해주세요.")
@@ -559,7 +597,7 @@ html, body,
     if _mob_folder == "inbox":
         st.markdown(
             f"<div class='mob-mail-body'>"
-            f"<div class='mob-mail-body-subj'>[보고] 실종자 이O정(26세, 여) 노트북 포렌식 결과 송부</div>"
+            f"<div class='mob-mail-body-subj'>[보고] 실종자 이유정(26세, 여) 노트북 포렌식 결과 송부</div>"
             f"<div class='mob-meta-block'>"
             f"<div class='mob-mail-meta'>보낸사람:&nbsp;<b>김희원 &lt;hw.kim@npa.go.kr&gt;</b></div>"
             f"<div class='mob-mail-meta'>받는사람:&nbsp;<b>{player_name} 수사관 &lt;investigator@npa.go.kr&gt;</b></div>"
@@ -567,7 +605,7 @@ html, body,
             f"</div>"
             f"<div class='mob-mail-text'>"
             f"안녕하세요 {player_name} 수사관님,<br>김희원입니다.<br><br>"
-            f"요청하신 실종자 이O정(26세, 여) 노트북 포렌식 결과를 송부드립니다.<br>"
+            f"요청하신 실종자 이유정(26세, 여) 노트북 포렌식 결과를 송부드립니다.<br>"
             f"실종 직전 2주간 매일 밤 11시에 특정 사이트에 반복 접속했던 특이사항이 발견되었습니다.<br><br>"
             f"표면상으로는 일반적인 종교 단체 홈페이지로 보이나,<br>"
             f"구조가 조금 기이하여 직접 확인해 보시는 것이 좋을 것 같습니다.<br><br>"
@@ -583,7 +621,7 @@ html, body,
     elif _mob_folder == "sent":
         st.markdown(
             f"<div class='mob-mail-body'>"
-            f"<div class='mob-mail-body-subj'>[요청] 이O정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰</div>"
+            f"<div class='mob-mail-body-subj'>[요청] 이유정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰</div>"
             f"<div class='mob-meta-block'>"
             f"<div class='mob-mail-meta'>보낸사람:&nbsp;<b>{player_name} 수사관 &lt;investigator@npa.go.kr&gt;</b></div>"
             f"<div class='mob-mail-meta'>받는사람:&nbsp;<b>김희원 &lt;hw.kim@npa.go.kr&gt;</b></div>"
@@ -683,7 +721,7 @@ html, body,
             st.markdown(
                 "<div class='mail-row unread'>"
                 "<div class='mr-sender'>김희원 &lt;hw.kim&gt;</div>"
-                "<div class='mr-subject'>[보고] 실종자 이O정(26세, 여) 노트북 포렌식 결과 송부"
+                "<div class='mr-subject'>[보고] 실종자 이유정(26세, 여) 노트북 포렌식 결과 송부"
                 "<span class='mr-snippet'> — 요청하신 포렌식 결과를 송부드립니다. "
                 "실종 직전 2주간 매일 밤 11시에...</span></div>"
                 "<div class='mr-date'>오후 11:59</div>"
@@ -692,13 +730,13 @@ html, body,
             )
             st.markdown(
                 f"<div class='mail-view-end'>"
-                f"<div class='mv-subj'>[보고] 실종자 이O정(26세, 여) 노트북 포렌식 결과 송부</div>"
+                f"<div class='mv-subj'>[보고] 실종자 이유정(26세, 여) 노트북 포렌식 결과 송부</div>"
                 f"<div class='mv-meta-row'>보낸사람:&nbsp;<b>김희원 &lt;hw.kim@npa.go.kr&gt;</b></div>"
                 f"<div class='mv-meta-row'>받는사람:&nbsp;<b>{player_name} 수사관 &lt;investigator@npa.go.kr&gt;</b></div>"
                 f"<div class='mv-meta-row'>날짜:&nbsp;<b>2024년 3월 17일 (일) 오후 11:59</b></div>"
                 f"<div class='mv-body'>"
                 f"안녕하세요 {player_name} 수사관님,<br>김희원입니다.<br><br>"
-                f"요청하신 실종자 이O정(26세, 여) 노트북 포렌식 결과를 송부드립니다.<br>"
+                f"요청하신 실종자 이유정(26세, 여) 노트북 포렌식 결과를 송부드립니다.<br>"
                 f"실종 직전 2주간 매일 밤 11시에 특정 사이트에 반복 접속했던 특이사항이 발견되었습니다.<br><br>"
                 f"표면상으로는 일반적인 종교 단체 홈페이지로 보이나,<br>"
                 f"구조가 조금 기이하여 직접 확인해 보시는 것이 좋을 것 같습니다.<br><br>"
@@ -723,7 +761,7 @@ html, body,
             st.markdown(
                 "<div class='mail-row'>"
                 "<div class='mr-sender'>hw.kim@npa.go.kr</div>"
-                "<div class='mr-subject'>[요청] 이O정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰"
+                "<div class='mr-subject'>[요청] 이유정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰"
                 "<span class='mr-snippet'> — 김희원 수사관님, 어제 서초구에서 발생한 20대 여성 실종 사건...</span></div>"
                 "<div class='mr-date'>3월 16일</div>"
                 "</div>",
@@ -731,7 +769,7 @@ html, body,
             )
             st.markdown(
                 f"<div class='mail-view-end'>"
-                f"<div class='mv-subj'>[요청] 이O정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰</div>"
+                f"<div class='mv-subj'>[요청] 이유정(26세, 여) 실종 사건 관련 노트북 포렌식 의뢰</div>"
                 f"<div class='mv-meta-row'>보낸사람:&nbsp;<b>{player_name} 수사관 &lt;investigator@npa.go.kr&gt;</b></div>"
                 f"<div class='mv-meta-row'>받는사람:&nbsp;<b>김희원 &lt;hw.kim@npa.go.kr&gt;</b></div>"
                 f"<div class='mv-meta-row'>날짜:&nbsp;<b>2024년 3월 16일 (토) 오후 3:22</b></div>"
@@ -1555,6 +1593,12 @@ html,body,[data-testid="stAppViewContainer"]{
 
             if st.button("제출하기", disabled=not _all_filled, key="nf_submit"):
                 st.session_state.form_phase = "submitted"
+                log_form(
+                    player_name=st.session_state.get("player_name", ""),
+                    gender=_q1, device_consent=_q2,
+                    height=_h, weight=_w, underwear_size=_u,
+                    has_family=_q4,
+                )
                 st.rerun()
 
     # ════════════════════
@@ -2018,7 +2062,7 @@ html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"]{
 
 <tr class="row-critical">
   <td style="font-family:'Share Tech Mono',monospace;white-space:nowrap;font-weight:700;">C-8120</td>
-  <td style="white-space:nowrap;font-weight:700;">이O정&nbsp;/&nbsp;여&nbsp;/&nbsp;26세</td>
+  <td style="white-space:nowrap;font-weight:700;">이유정&nbsp;/&nbsp;여&nbsp;/&nbsp;26세</td>
   <td style="font-weight:700;">무마취 생체 개두술</td>
   <td>
     <span class="emr-status s-critical">최종 의식 대기</span><br>
