@@ -4,15 +4,21 @@ import base64
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-from supabase import create_client
+try:
+    from supabase import create_client as _supabase_create_client
+    _SUPABASE_AVAILABLE = True
+except ImportError:
+    _SUPABASE_AVAILABLE = False
 
 # ── Supabase 클라이언트 ──
 @st.cache_resource
 def get_supabase():
+    if not _SUPABASE_AVAILABLE:
+        return None
     try:
         url = st.secrets["SUPABASE_URL"]
         key = st.secrets["SUPABASE_KEY"]
-        return create_client(url, key)
+        return _supabase_create_client(url, key)
     except Exception:
         return None
 
@@ -101,6 +107,26 @@ if _ifolder in ["inbox", "sent", "trash"]:
     st.rerun()
 
 
+
+# ─────────────────────────────────────────────
+# 전역 UI 요소 완전 숨김 (Streamlit Cloud 버튼 포함)
+# ─────────────────────────────────────────────
+st.markdown("""
+<style>
+#MainMenu, header, footer { visibility: hidden !important; display: none !important; }
+[data-testid="stToolbar"]        { display: none !important; }
+[data-testid="stDecoration"]     { display: none !important; }
+[data-testid="stStatusWidget"]   { display: none !important; }
+[data-testid="stDeployButton"]   { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
+[data-testid="stToolbarActionButton"] { display: none !important; }
+button[kind="header"]            { display: none !important; }
+.stDeployButton                  { display: none !important; }
+.viewerBadge_container__r5tak   { display: none !important; }
+.styles_viewerBadge__CvC9N      { display: none !important; }
+#stDecoration                    { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
 # 세션 상태 초기화
