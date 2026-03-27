@@ -1,0 +1,56 @@
+[
+  {
+    "rank": "1위",
+    "place_id": "13155391",
+    "name": "맥스XX 피트니스 건대점",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Frame.evaluate: Target page, context or browser has been closed"
+  },
+  {
+    "rank": "2위",
+    "place_id": "1166532147",
+    "name": "에이블짐 건대구의역점",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Page.goto: Target page, context or browser has been closed"
+  },
+  {
+    "rank": "3위",
+    "place_id": "1219319598",
+    "name": "스XX 구의역점",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Page.goto: Target page, context or browser has been closed"
+  },
+  {
+    "rank": "4위",
+    "place_id": "1083518673",
+    "name": "포스보이스XX 건대스포아트",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Page.goto: Target page, context or browser has been closed"
+  },
+  {
+    "rank": "5위",
+    "place_id": "1056155482",
+    "name": "피트니스파이 우먼 건대점",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Page.goto: Target page, context or browser has been closed"
+  },
+  {
+    "rank": "내 업체",
+    "place_id": "1100555051",
+    "name": "짐박스피트니스 건대구의점",
+    "reviews": [],
+    "total_collected": 0,
+    "source": "none",
+    "error": "Page.goto: Target page, context or browser has been closed"
+  }
+]
